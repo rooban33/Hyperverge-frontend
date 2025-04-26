@@ -20,6 +20,7 @@ coverage:
         paths: null
     patch:
       default:
+<<<<<<< HEAD
         # Basic settings
         target: auto
         threshold: 1%
@@ -30,6 +31,12 @@ coverage:
         only_pulls: false
         flags: null
         paths: null
+=======
+        # basic
+        target: auto
+        threshold: 0.5%
+        base: auto
+>>>>>>> ae297e19e4ea9b26be75fbfe5c7487c0f497eab5
 
 parsers:
   gcov:
@@ -44,9 +51,13 @@ comment:
   behavior: default
   require_changes: no
   require_base: no
+<<<<<<< HEAD
   require_head: yes
 
 ignore:
   - "**/*.stories.{js,jsx,ts,tsx}"
   - "**/*.d.ts"
   - "src/types/**/*" 
+=======
+  require_head: yes 
+>>>>>>> ae297e19e4ea9b26be75fbfe5c7487c0f497eab5

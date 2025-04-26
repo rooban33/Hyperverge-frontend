@@ -12,6 +12,7 @@ If you want to contribute to SensAI, please look at the `Contributing` section [
 Our public roadmap is live [here](https://hyperverge.notion.site/fa1dd0cef7194fa9bf95c28820dca57f?v=ec52c6a716e94df180dcc8ced3d87610). Go check it out and let us know what you think we should build next!
 
 ## Contributing
+<<<<<<< HEAD
 To learn more about making a contribution to SensAI, please see our [Contributing guide](https://gitlab.com/hvacademy/sensai-ai/-/blob/main/docs/CONTRIBUTING.md).
 
 ## Installation
@@ -44,6 +45,45 @@ SensAI uses Jest and React Testing Library for testing. The test suite includes 
   ```
   npm test
   ```
+=======
+To learn more about making a contribution to SensAI, please see our [Contributing guide](./docs/CONTRIBUTING.md).
+
+## Installation
+Refer to the [INSTALL.md](./docs/INSTALL.md) file for instructions on how to install and run the backend locally.
+
+## Testing
+SensAI uses pytest for testing the API endpoints and measuring code coverage. To run the tests and generate coverage reports, follow these instructions:
+
+### Installing Test Dependencies
+```bash
+pip install -r requirements-dev.txt
+```
+
+### Running Tests
+To run all tests and generate a coverage report:
+```bash
+./scripts/run_tests.sh
+```
+
+To run only unit tests:
+```bash
+./scripts/run_unit_tests.sh
+```
+
+To run only integration tests:
+```bash
+./scripts/run_integration_tests.sh
+```
+
+### Coverage Reports
+After running the full test suite with `run_tests.sh`, a HTML coverage report will be generated in the `coverage_html` directory. Open `coverage_html/index.html` in your browser to view the report.
+
+### CodeCov Integration
+This project is integrated with [CodeCov](https://codecov.io) for continuous monitoring of code coverage. Coverage reports are automatically generated and uploaded to CodeCov when tests are run in the GitLab CI pipeline. The CodeCov badge at the top of this README shows the current coverage status.
+
+<!-- ## Deployment
+Use the `Dockerfile` provided to build a docker image and deploy the image to whatever infra makes sense for you. We use an EC2 instance and you can refer to the `.gitlab-ci.yml` and `docker-compose.ai.demo.yml` files to understand how we do Continuous Deployment (CD). -->
+>>>>>>> ae297e19e4ea9b26be75fbfe5c7487c0f497eab5
 
 ## Community
 We are building a community of creators, builders, teachers, learners, parents, entrepreneurs, non-profits and volunteers who are excited about the future of AI and education. If you identify as one and want to be part of it, consider [joining our community](https://chat.whatsapp.com/LmiulDbWpcXIgqNK6fZyxe).
