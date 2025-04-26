@@ -25,7 +25,7 @@ from api.routes.ai import (
     resume_pending_task_generation_jobs,
     resume_pending_course_structure_generation_jobs,
 )
-from api.websockets import router as websocket_router
+from api.websockets_util import router as websocket_router
 from api.scheduler import scheduler
 from api.settings import settings
 

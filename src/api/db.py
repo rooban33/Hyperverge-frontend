@@ -8,6 +8,8 @@ import uuid
 from typing import List, Any, Tuple, Dict, Literal
 from datetime import datetime, timezone, timedelta
 import pandas as pd
+from .audio2txt import get_file_path
+from .img2txt import process_image
 from api.config import (
     sqlite_db_path,
     chat_history_table_name,
@@ -975,9 +977,7 @@ def construct_description_from_blocks(
         content = block.get("content", [])
         children = block.get("children", [])
 
-        # Process based on block type
         if block_type == "paragraph":
-            # Content is a list of text objects
             if isinstance(content, list):
                 paragraph_text = ""
                 for text_obj in content:
@@ -985,6 +985,22 @@ def construct_description_from_blocks(
                         paragraph_text += text_obj["text"]
                 if paragraph_text:
                     description += f"{indent}{paragraph_text}\n"
+
+        elif block_type == "image":
+            explain = block.get("props", {}).get("explain", "")
+            img_url = block.get("props", {}).get("url", "")
+            description += f"{indent}# Image File\n"
+            description += f"{indent}[Image file attached: {img_url}]\n\n"
+            description += f"{indent}Brief description of the image:\n{indent}{explain}\n"
+            print("Pranav image:", explain)
+
+        elif block_type == "audio":
+            explain = block.get("props", {}).get("explain", "")
+            aud_url = block.get("props", {}).get("url", "")
+            description += f"{indent}# Audio File\n"
+            description += f"{indent}[Audio file attached: {aud_url}]\n\n"
+            description += f"{indent}Brief description or transcript of the audio:\n{indent}{explain}\n"
+            print("Pranav audio:", explain)
 
         elif block_type == "heading":
             level = block.get("props", {}).get("level", 1)
@@ -994,7 +1010,6 @@ def construct_description_from_blocks(
                     if isinstance(text_obj, dict) and "text" in text_obj:
                         heading_text += text_obj["text"]
                 if heading_text:
-                    # Headings are typically not indented, but we'll respect nesting for consistency
                     description += f"{indent}{'#' * level} {heading_text}\n"
 
         elif block_type == "codeBlock":
@@ -1005,9 +1020,7 @@ def construct_description_from_blocks(
                     if isinstance(text_obj, dict) and "text" in text_obj:
                         code_text += text_obj["text"]
                 if code_text:
-                    description += (
-                        f"{indent}```{language}\n{indent}{code_text}\n{indent}```\n"
-                    )
+                    description += f"{indent}```{language}\n{indent}{code_text}\n{indent}```\n"
 
         elif block_type in ["numberedListItem", "checkListItem", "bulletListItem"]:
             if isinstance(content, list):
@@ -1016,14 +1029,12 @@ def construct_description_from_blocks(
                     if isinstance(text_obj, dict) and "text" in text_obj:
                         item_text += text_obj["text"]
                 if item_text:
-                    # Use proper list marker based on parent list type
                     if block_type == "numberedListItem":
                         marker = "1. "
                     elif block_type == "checkListItem":
                         marker = "- [ ] "
                     elif block_type == "bulletListItem":
                         marker = "- "
-
                     description += f"{indent}{marker}{item_text}\n"
 
         if children:
@@ -1033,7 +1044,6 @@ def construct_description_from_blocks(
             description += child_description
 
     return description
-
 
 async def get_basic_task_details(task_id: int) -> Dict:
     task = await execute_db_operation(
@@ -1116,6 +1126,27 @@ def prepare_blocks_for_publish(blocks: List[Dict]) -> List[Dict]:
 
     return blocks
 
+def media_block(blocks: List[Dict])-> List[Dict]:
+    for block in blocks:
+        block_type = block.get("type", "")
+        content = block.get("content", [])
+        children = block.get("children", [])
+
+        if block_type == "image":
+            img_url = block["props"]["url"]
+            summary_of_image = process_image(img_url)
+            # Directly add 'explain' field to the block's props
+            block["props"]["explain"] = summary_of_image
+            print("Pranav image:", summary_of_image)
+        
+        elif block_type == "audio":
+            aud_url = block["props"]["url"]
+            x=get_file_path(aud_url)
+            block["props"]["explain"] = x
+            print("Pranav audio:", x)
+    return blocks
+
+
 
 async def publish_learning_material_task(
     task_id: int,
@@ -1130,6 +1161,9 @@ async def publish_learning_material_task(
     # Execute all operations in a single transaction
     async with get_new_db_connection() as conn:
         cursor = await conn.cursor()
+        
+        media_block(blocks)
+        print("Pranav Block:",blocks)
 
         await cursor.execute(
             f"UPDATE {tasks_table_name} SET blocks = ?, status = ?, title = ?, scheduled_publish_at = ? WHERE id = ?",

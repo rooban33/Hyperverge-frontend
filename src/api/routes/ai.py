@@ -1,6 +1,7 @@
 from ast import List
 import os
 import tempfile
+import re
 import random
 from collections import defaultdict
 import asyncio
@@ -26,7 +27,7 @@ from api.llm import run_llm_with_instructor, stream_llm_with_instructor
 from api.settings import settings
 from api.utils.logging import logger
 from api.utils.concurrency import async_batch_gather
-from api.websockets import get_manager
+from api.websockets_util import get_manager
 from api.db import (
     get_question_chat_history_for_user,
     get_question,
@@ -105,36 +106,75 @@ async def rewrite_query_for_doubt_solving(chat_history: List[Dict]) -> str:
 
 
 def get_ai_message_for_chat_history(ai_message: Dict) -> str:
-    message = json.loads(ai_message)
+    
+    # Ensure ai_message is a dictionary
+    message = ai_message if isinstance(ai_message, dict) else {}
+    
+    # If no scorecard or scorecard is empty, return feedback
+    if not message.get("scorecard"):
+        return message.get("feedback", "")
 
-    if "scorecard" not in message or not message["scorecard"]:
-        return message["feedback"]
+    try:
+        scorecard_as_prompt = []
+        for criterion in message.get("scorecard", []):
+            # Safely get values with default fallbacks
+            row_as_prompt = f"""- **{criterion.get('category', 'Unnamed Category')}**\n"""
+            
+            feedback = criterion.get("feedback", {})
+            if feedback.get("correct"):
+                row_as_prompt += f"""  What worked well: {feedback['correct']}\n"""
+            
+            if feedback.get("wrong"):
+                row_as_prompt += f"""  What needs improvement: {feedback['wrong']}\n"""
+            
+            row_as_prompt += f"""  Score: {criterion.get('score', 'N/A')} / {criterion.get('max_score', 'N/A')}"""
+            
+            scorecard_as_prompt.append(row_as_prompt)
 
-    scorecard_as_prompt = []
-    for criterion in message["scorecard"]:
-        row_as_prompt = ""
-        row_as_prompt += f"""- **{criterion['category']}**\n"""
-        if criterion["feedback"].get("correct"):
-            row_as_prompt += (
-                f"""  What worked well: {criterion['feedback']['correct']}\n"""
-            )
-        if criterion["feedback"].get("wrong"):
-            row_as_prompt += (
-                f"""  What needs improvement: {criterion['feedback']['wrong']}\n"""
-            )
-        row_as_prompt += f"""  Score: {criterion['score']}"""
-        scorecard_as_prompt.append(row_as_prompt)
+        # Join scorecard rows
+        scorecard_as_prompt = "\n".join(scorecard_as_prompt)
 
-    scorecard_as_prompt = "\n".join(scorecard_as_prompt)
-    return f"""Feedback:\n```\n{message['feedback']}\n```\n\nScorecard:\n```\n{scorecard_as_prompt}\n```"""
+        # Construct final feedback message
+        return f"""Feedback:\n```\n{message.get('feedback', '')}\n```\n\nScorecard:\n```\n{scorecard_as_prompt}\n```"""
 
-
+    except Exception as e:
+        # Fallback error handling
+        print(f"Error processing AI message: {e}")
+        return message.get("feedback", str(message))
 def get_user_message_for_chat_history(user_response: str) -> str:
     return f"""Student's Response:\n```\n{user_response}\n```"""
 
 
+def to_snake_case(name):
+    """Helper function to convert camelCase or mixedCase to snake_case."""
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+def fix_keys(obj):
+    """Recursively turns all dict keys into snake_case strings."""
+    if isinstance(obj, dict):
+        return {to_snake_case(str(k)): fix_keys(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [fix_keys(i) for i in obj]
+    else:
+        return obj
+
+def make_backend_compatible(raw_payload):
+    """
+    Accepts a Python dict like the one from your sample, and returns a backend-compatible JSON string.
+    """
+    # First, fix keys to snake_case (optional, in case backend expects this)
+    payload_fixed = fix_keys(raw_payload)
+    # Then, serialize to pretty JSON (None and booleans will be handled by json.dumps)
+    json_payload = json.dumps(payload_fixed, indent=2)
+    return json_payload
+
+
 @router.post("/chat")
 async def ai_response_for_question(request: AIChatRequest):
+    # x = request.chat_history
+    # request.chat_history = []
+    # print("Shajith check:", x)
     if request.task_type in [TaskType.EXAM, TaskType.QUIZ]:
         if request.question_id is None and request.question is None:
             raise HTTPException(
@@ -175,6 +215,7 @@ async def ai_response_for_question(request: AIChatRequest):
 
         reference_material = construct_description_from_blocks(task["blocks"])
         question_details = f"""Reference Material:\n```\n{reference_material}\n```"""
+        print("check Pranav:",question_details)
     else:
         if request.question_id:
             question = await get_question(request.question_id)
