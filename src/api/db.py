@@ -1003,7 +1003,7 @@ def construct_description_from_blocks(
             aud_url = block.get("props", {}).get("url", "")
             description += f"{indent}# Audio File\n"
             description += f"{indent}[Audio file attached: {aud_url}]\n\n"
-            description += f"{indent}Brief description or transcript of the audio:\n{indent}{explain}\n"
+            description += f"{indent}Brief description of the audio:\n{indent}{explain}\n"
             print("Pranav audio:", explain)
         
         elif block_type == "video":

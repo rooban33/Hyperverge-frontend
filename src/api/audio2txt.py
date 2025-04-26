@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 # Replace this with a secure method (like environment variable) in production
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = "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"
 
 def audiofile_to_text(filename):
     client = OpenAI(api_key=OPENAI_API_KEY)

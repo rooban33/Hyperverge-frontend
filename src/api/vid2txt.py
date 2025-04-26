@@ -10,13 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 
-def get_openai_client():
-    from openai import OpenAI
-    return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-
-client = get_openai_client()
-
+client = OpenAI(api_key="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")
 
 def separate_audio_and_video(video_file):
     os.makedirs("audio", exist_ok=True)
@@ -50,7 +44,7 @@ def audio_to_text(audio_file):
     if not audio_file:
         print("⚠️ Skipping transcription: No audio file provided.")
         return ""
-    client = get_openai_client()
+    client = OpenAI(api_key="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")
 
     # Open the audio file in binary mode
     with open(audio_file, "rb") as audio_file:

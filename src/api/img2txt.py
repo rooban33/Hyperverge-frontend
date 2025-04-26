@@ -1,4 +1,3 @@
-import os
 import openai
 import base64
 from openai import OpenAI
@@ -10,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 # Replace this with your actual OpenAI API key
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = "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"
 
 def extract_json(text):
     # Try to extract JSON wrapped in ```json ... ```
