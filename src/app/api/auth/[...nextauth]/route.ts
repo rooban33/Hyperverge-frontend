@@ -8,8 +8,8 @@ import { registerUserWithBackend } from "./utils";
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId:"913855991125-co2u4kh61tkbd40it4ot7c2n1j45o1nt.apps.googleusercontent.com",
-      clientSecret:"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",
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
   pages: {
