@@ -10,6 +10,7 @@ from datetime import datetime, timezone, timedelta
 import pandas as pd
 from .audio2txt import get_file_path
 from .img2txt import process_image
+from .vid2txt import correlate_audio_video
 from api.config import (
     sqlite_db_path,
     chat_history_table_name,
@@ -71,6 +72,9 @@ from api.utils.db import (
     set_db_defaults,
 )
 from api.models import TaskType, GenerateCourseJobStatus, GenerateTaskJobStatus
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 
 async def create_tests_table(cursor):
@@ -1001,6 +1005,14 @@ def construct_description_from_blocks(
             description += f"{indent}[Audio file attached: {aud_url}]\n\n"
             description += f"{indent}Brief description or transcript of the audio:\n{indent}{explain}\n"
             print("Pranav audio:", explain)
+        
+        elif block_type == "video":
+            explain = block.get("props", {}).get("explain", "")
+            vid_url = block.get("props", {}).get("url", "")
+            description += f"{indent}# Video File\n"
+            description += f"{indent}[Video file attached: {vid_url}]\n\n"
+            description += f"{indent}Brief description of the video:\n{indent}{explain}\n"
+            print("Pranav video:", explain)
 
         elif block_type == "heading":
             level = block.get("props", {}).get("level", 1)
@@ -1144,6 +1156,12 @@ def media_block(blocks: List[Dict])-> List[Dict]:
             x=get_file_path(aud_url)
             block["props"]["explain"] = x
             print("Pranav audio:", x)
+        elif block_type == "video":
+            vid_url = block["props"]["url"]
+            summary_of_video = correlate_audio_video(vid_url)
+            # Directly add 'explain' field to the block's props
+            block["props"]["explain"] = summary_of_video
+            print("Pranav video:", summary_of_video)
     return blocks
 
 

@@ -1,12 +1,16 @@
+import os
 import openai
 import base64
 from openai import OpenAI
 from urllib.parse import urlparse
 import re
 import json
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 # Replace this with your actual OpenAI API key
-api_key = "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"
+api_key = os.getenv("OPENAI_API_KEY")
 
 def extract_json(text):
     # Try to extract JSON wrapped in ```json ... ```
@@ -35,11 +39,16 @@ def generate_summary(data):
 
     return summary
 
-def process_image(image_path):
+def process_image(image_path,type=0):
   # --- Read and encode the image ---
-  with open(f".{urlparse(image_path).path}", "rb") as img_file:
-      image_bytes = img_file.read()
-      encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+  if type==1:
+    with open(f"{urlparse(image_path).path}", "rb") as img_file:
+        image_bytes = img_file.read()
+        encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+  else:
+     with open(f".{urlparse(image_path).path}", "rb") as img_file:
+        image_bytes = img_file.read()
+        encoded_image = base64.b64encode(image_bytes).decode("utf-8")
 
   # --- Initialize client ---
   client = OpenAI(api_key=api_key)

@@ -28,6 +28,9 @@ from api.routes.ai import (
 from api.websockets_util import router as websocket_router
 from api.scheduler import scheduler
 from api.settings import settings
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 
 @asynccontextmanager

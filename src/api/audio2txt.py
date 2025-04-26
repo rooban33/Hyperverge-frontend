@@ -1,9 +1,12 @@
 import os
 from urllib.parse import urlparse
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 # Replace this with a secure method (like environment variable) in production
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def audiofile_to_text(filename):
     client = OpenAI(api_key=OPENAI_API_KEY)

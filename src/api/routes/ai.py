@@ -54,6 +54,9 @@ from api.utils.s3 import (
     get_media_upload_s3_key_from_uuid,
 )
 from api.utils.audio import prepare_audio_input_for_ai
+from dotenv import load_dotenv
+
+load_dotenv() 
 
 router = APIRouter()
 
