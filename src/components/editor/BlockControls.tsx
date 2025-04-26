@@ -111,6 +111,11 @@ const BlockControls: React.FC<BlockControlsProps> = ({ id, type, onPlusButtonCli
                             <span>Heading 3</span>
                         </DropdownMenuItem>
 
+                        <DropdownMenuItem onClick={() => changeBlockType('recorder')}>
+                            <Heading3 className="mr-2 h-4 w-4"/>
+                            <span>Voice Recorder</span>
+                        </DropdownMenuItem>
+
                         <DropdownMenuItem onClick={() => changeBlockType('bulletList')}>
                             <List className="mr-2 h-4 w-4" />
                             <span>Bullet List</span>
@@ -125,6 +130,7 @@ const BlockControls: React.FC<BlockControlsProps> = ({ id, type, onPlusButtonCli
                             <CheckSquare className="mr-2 h-4 w-4" />
                             <span>To-do List</span>
                         </DropdownMenuItem>
+
 
                         <DropdownMenuItem onClick={() => changeBlockType('divider')}>
                             <Minus className="mr-2 h-4 w-4" />

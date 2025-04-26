@@ -13,6 +13,8 @@ import Tooltip from "./Tooltip";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { formatScheduleDate } from "@/lib/utils/dateFormat";
+import { Mic } from 'lucide-react';
+import AudioRecorderModal from "./AudioRecorderWithModal";
 
 // Dynamically import the editor components
 const DynamicLearningMaterialEditor = dynamic(
@@ -105,6 +107,7 @@ const CourseItemDialog: React.FC<CourseItemDialogProps> = ({
     const [toastTitle, setToastTitle] = useState("Published");
     const [toastDescription, setToastDescription] = useState("");
     const [toastEmoji, setToastEmoji] = useState("🚀");
+    const [showRecorderModal, setShowRecorderModal] = useState(false);
 
     // Add state for close confirmation dialog
     const [showCloseConfirmation, setShowCloseConfirmation] = useState(false);
@@ -489,6 +492,20 @@ const CourseItemDialog: React.FC<CourseItemDialogProps> = ({
         }, 5000); // Auto-hide after 5 seconds
     };
 
+    const handleRecordingComplete = (audioBlob: Blob) => {
+        // Do something with the audio blob
+        console.log('Audio recording complete', audioBlob);
+        
+        // Example: You might want to upload the blob to a server
+        // const formData = new FormData();
+        // formData.append('audio', audioBlob, 'recording.webm');
+        // fetch('/api/upload', { method: 'POST', body: formData });
+      };
+
+    const handleRecord = () => {
+        window.alert("Audio recorder!!")
+      };
+
     // Handle save button click - show confirmation
     const handleSaveClick = () => {
         // For quizzes and exams, validate before showing save confirmation
@@ -734,6 +751,24 @@ const CourseItemDialog: React.FC<CourseItemDialogProps> = ({
                                             )}
                                         </div>
                                     )}
+                                   <div>
+                                {/* Button to open recorder */}
+                                <button
+                                    onClick={() => setShowRecorderModal(true)}
+                                    className="flex items-center px-4 py-2 text-sm text-white bg-transparent border !border-yellow-500 hover:bg-[#222222] focus:border-yellow-500 active:border-yellow-600 rounded-full transition-colors cursor-pointer"
+                                    aria-label="Record Audio"
+                                >
+                                    <Mic size={16} className="mr-2" />
+                                    Audio Recorder
+                                </button>
+
+                                {/* Audio Recorder Modal */}
+                                <AudioRecorderModal
+                                    isOpen={showRecorderModal}
+                                    onClose={() => setShowRecorderModal(false)}
+                                    onRecordingComplete={handleRecordingComplete}
+                                />
+                                </div>
                                     <button
                                         onClick={handleSaveClick}
                                         className="flex items-center px-4 py-2 text-sm text-white bg-transparent border !border-green-500 hover:bg-[#222222] focus:border-green-500 active:border-green-500 rounded-full transition-colors cursor-pointer"

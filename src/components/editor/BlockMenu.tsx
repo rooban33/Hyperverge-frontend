@@ -8,7 +8,8 @@ import {
     List,
     ListOrdered,
     CheckSquare,
-    Minus
+    Minus,
+    Mic
 } from 'lucide-react';
 import { BlockType } from '@/context/EditorContext';
 
@@ -32,7 +33,7 @@ const blockTypes = [
         description: 'Large section heading',
     },
     {
-        label: 'Heading 2',
+        label: 'Pranav 2',
         type: 'heading2' as BlockType,
         icon: Heading2,
         description: 'Medium section heading',
@@ -66,6 +67,12 @@ const blockTypes = [
         type: 'divider' as BlockType,
         icon: Minus,
         description: 'Create a visual divider',
+    },
+    {
+        label: 'Voice Recorder',
+        type: 'recorder' as BlockType,
+        icon: Mic,
+        description: 'Add a live voice recorder to your document',
     },
 ];
 

@@ -185,6 +185,13 @@ const Block: React.FC<BlockProps> = ({ id, type, content, onShowBlockMenu }) => 
                         <hr className="border-t border-border" />
                     </div>
                 );
+            case 'recorder':
+                    return (
+                        <div className="flex items-start gap-2 mb-2">
+                        <input type="checkbox" className="mt-1.5 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+                        <div className="flex-1 outline-none" data-placeholder="To-do"></div>
+                    </div>
+                    );
             case 'paragraph':
             default:
                 return (

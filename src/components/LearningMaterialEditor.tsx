@@ -161,6 +161,10 @@ const LearningMaterialEditor = forwardRef<LearningMaterialEditorHandle, Learning
                                 content: [{ "text": "Here are some examples of the different types of blocks you can use:", "type": "text", styles: {} }]
                             },
                             {
+                                type: "recorder",
+                                content: [{ "text": "Welcome to the Audio recorder", "type": "text", styles: {} }]
+                            },
+                            {
                                 type: "heading",
                                 props: { level: 2 },
                                 content: [{ "text": "Headings (like this one)", "type": "text", styles: {} }]
